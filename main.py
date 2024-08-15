@@ -1,14 +1,15 @@
 import os
 import time
-from linecache import cache
+import shutil
 
 ##
 
 ## Каталог где будут просматриваться подпапки на дубли
-path_search = "D:\Work\Koshkina_old\Рабочие документы\!Пациенты\Нозологии"
+path_search = "...."
 ## Каталог куда будут перемещены дубли
-path_out = "D:\Work\Koshkina_old\out"
-
+path_out = "...."
+### Лог файл
+path_log = "...."
 
 def create_massiv_double_path(arg):
 
@@ -18,7 +19,6 @@ def create_massiv_double_path(arg):
         secondary_path = os.listdir(f'{arg}\\{first_level}')
         for secondary_level in secondary_path:
             #### фиксируем дату и полный путь каталога
-
             full_path = f'{arg}\\{first_level}'
             #############
             ### Сравниваем наименования
@@ -41,16 +41,17 @@ def create_massiv_double_path(arg):
                     tm_s = int(f'{edit_time_s.tm_year}{edit_time_s.tm_mon}{edit_time_s.tm_mday}')
                     edit_time_f = time.gmtime(os.path.getmtime(f'{arg}\\{first_level}\\{secondary_level}'))
                     tm_f = int(f'{edit_time_f.tm_year}{edit_time_f.tm_mon}{edit_time_f.tm_mday}')
-                    print(tm_f)
-                    print(f'{full_path}\\{last_name_sec}')
-                    print(tm_s)
-                    print(f'{full_path}\\{secondary_level}')
-
+                    with open(path_log, 'a+') as f:
+                        if tm_f <= tm_s:
+                            f.write(f'{arg}\\{first_level}\\{secondary_level}\n')
+                            shutil.move(f'{arg}\\{first_level}\\{secondary_level}', f'{path_out}\\{secondary_level}', copy_function=shutil.copytree)
+                        else:
+                            f.write(f'{arg}\\{first_level}\\{last_name_sec}')
+                            shutil.move(f'{arg}\\{first_level}\\{last_name_sec}', f'{path_out}\\{last_name_sec}',
+                                    copy_function=shutil.copytree)
+                        f.close()
             #############
             last_name_sec = secondary_level
-
-
-
 
 
 if __name__ == "__main__":
